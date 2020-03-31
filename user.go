@@ -25,9 +25,17 @@ package main
 }
 **/
 type User struct {
-	Name   string `json:"name"`
-	Email  string `json:"email"`
-	Status string `json:"account_status"`
+	Name          string    `json:"name"`
+	Email         string    `json:"email"`
+	Status        string    `json:"account_status"`
+	ProductAccess []Product `json:"product_access"`
+}
+
+type Product struct {
+	Key        string
+	Name       string
+	URL        string
+	LastActive string
 }
 
 func (u User) validate() error {

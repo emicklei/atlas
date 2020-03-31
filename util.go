@@ -53,10 +53,10 @@ func optionJSON(c *cli.Context, v interface{}) bool {
 	return wantsJSON
 }
 
-func newRequest() *resty.Request {
+func newRequest(c Config) *resty.Request {
 	client := resty.New()
 	return client.R().
 		SetHeader("accept", "application/json").
 		SetHeader("content-type", "application/json").
-		SetHeader("Authorization", fmt.Sprintf("Bearer %s", sharedConfig.APIKey))
+		SetHeader("Authorization", fmt.Sprintf("Bearer %s", c.APIKey))
 }

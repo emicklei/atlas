@@ -12,29 +12,47 @@ import (
 // https://developer.atlassian.com/cloud/admin/organization/rest/#api-orgs-orgId-users-get
 func cmdUserList(c *cli.Context) error {
 	// taken from the URL in admin.atlassian.com
-	orgID := sharedConfig.OrganisationID
-	resp, err := newRequest().
-		Get(fmt.Sprintf("https://api.atlassian.com/admin/v1/orgs/%s/users", orgID))
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode() != http.StatusOK {
-		return errors.New(resp.String())
-	}
+	cfg := getConfig(c)
+	orgID := cfg.OrganisationID
 	type Data struct {
-		Data []User
+		Data  []User
+		Links struct {
+			Next string
+		}
 	}
-	data := Data{}
-	if err := json.Unmarshal(resp.Body(), &data); err != nil {
-		fmt.Println(resp.String())
-		return err
+	allData := []Data{}
+	next := fmt.Sprintf("https://api.atlassian.com/admin/v1/orgs/%s/users", orgID)
+	for {
+		resp, err := newRequest(cfg).Get(next)
+		if err != nil {
+			return err
+		}
+		if resp.StatusCode() != http.StatusOK {
+			return errors.New(resp.String())
+		}
+		data := Data{}
+		if err := json.Unmarshal(resp.Body(), &data); err != nil {
+			fmt.Println(resp.String())
+			return err
+		}
+		allData = append(allData, data)
+		next = data.Links.Next
+		if len(next) == 0 {
+			// no more data
+			break
+		}
 	}
-	if optionJSON(c, data.Data) {
+	// merge users
+	users := []User{}
+	for _, each := range allData {
+		users = append(users, each.Data...)
+	}
+	if optionJSON(c, users) {
 		return nil
 	}
-	for _, u := range data.Data {
-		// email is default
-		fmt.Println(u.Email)
+	for _, u := range users {
+		// email TAB name TAB status
+		fmt.Printf("%s\t%s\t%s\n", u.Email, u.Name, u.Status)
 	}
 	return nil
 }

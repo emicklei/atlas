@@ -10,8 +10,9 @@ import (
 
 // https://developer.atlassian.com/cloud/admin/user-provisioning/rest/#api-scim-directory-directoryId-Groups-get
 func cmdGroupList(c *cli.Context) error {
-	directoryID := sharedConfig.DirectoryID
-	resp, err := newRequest().
+	cfg := getConfig(c)
+	directoryID := cfg.DirectoryID
+	resp, err := newRequest(cfg).
 		Get(fmt.Sprintf("https://api.atlassian.com/scim/directory/%s/Groups", directoryID))
 	if err != nil {
 		return err
