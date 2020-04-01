@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -51,8 +52,16 @@ func cmdUserList(c *cli.Context) error {
 		return nil
 	}
 	for _, u := range users {
-		// email TAB name TAB status
-		fmt.Printf("%s\t%s\t%s\n", u.Email, u.Name, u.Status)
+		productnames := []string{}
+		for _, each := range u.ProductAccess {
+			productnames = append(productnames, each.Name+" ("+each.URL+")")
+		}
+		billable := ""
+		if u.Billable {
+			billable = "billable"
+		}
+		// email TAB name TAB status TAB billable TAB producten*
+		fmt.Printf("%s\t%s\t%s\t%v\t\"%s\"\n", u.Email, u.Name, u.Status, billable, strings.Join(productnames, "\n"))
 	}
 	return nil
 }

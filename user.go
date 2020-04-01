@@ -28,6 +28,7 @@ type User struct {
 	Name          string    `json:"name"`
 	Email         string    `json:"email"`
 	Status        string    `json:"account_status"`
+	Billable      bool      `json:"access_billable"`
 	ProductAccess []Product `json:"product_access"`
 }
 
