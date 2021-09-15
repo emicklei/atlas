@@ -20,10 +20,10 @@ func newApp() *cli.App {
 	app := cli.NewApp()
 	app.Version = version
 	app.EnableBashCompletion = true
-	app.Name = "asuite"
+	app.Name = "atlas"
 	app.Usage = `Atlassion User Administration command line tool
 
-	see https://github.com/emicklei/asuite for documentation.
+	see https://github.com/emicklei/atlas for documentation.
 `
 	// override -v
 	cli.VersionFlag = cli.BoolFlag{
